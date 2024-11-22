@@ -7,23 +7,33 @@ function App() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("chưa có gì đâu");
   const [idToken, setIdToken] = useState<any>("chưa có gì đâu 2");
-  const [profile, setProfile] = useState<any>()
+  const [profile, setProfile] = useState<any>();
 
-  useEffect(() => {
+  useEffect( () => {
     liff
       .init({
         liffId: import.meta.env.VITE_LIFF_ID,
         withLoginOnExternalBrowser: true,
       })
       .then(() => {
-        setMessage("LIFF init succeeded.");
-        const idToken = liff.getIDToken();
-        const token = liff.getAccessToken();
-        const profile = liff.getProfile();
+        if (!liff.isLoggedIn()) {
+          setMessage("LIFF init succeeded.");
+          const idToken = liff.getIDToken();
+          const token = liff.getAccessToken();
+          const profile = liff.getDecodedIDToken()?.email;
 
-        setProfile(profile)
-        setToken(token ?? "");
-        setIdToken(idToken ?? "");
+          setProfile(profile);
+          setToken(token ?? "");
+          setIdToken(idToken ?? "");
+        } else {
+          // Once logged in, get the user's profile or other information
+          liff
+            .getProfile()
+            .then((profile) => {
+              console.log("User Profile:", profile);
+            })
+            .catch((error) => console.error("Error fetching profile:", error));
+        }
       })
       .catch((e: Error) => {
         setMessage("LIFF init failed.");
@@ -42,7 +52,7 @@ function App() {
       <button onClick={() => copyToClipboard(token)}>Copy Token</button>
       <h1>ID Token: {idToken}</h1>
       <button onClick={() => copyToClipboard(idToken)}>Copy ID Token</button>
-      <h1>profile: {profile?.email ?? "không get được"}</h1>
+      <h1>profile: {profile ?? "không get đc "}</h1>
       <button onClick={() => copyToClipboard(idToken)}>Copy ID Token</button>
       {message && <p>{message}</p>}
       {error && (
