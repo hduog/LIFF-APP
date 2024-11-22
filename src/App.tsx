@@ -9,31 +9,21 @@ function App() {
   const [idToken, setIdToken] = useState<any>("chưa có gì đâu 2");
   const [profile, setProfile] = useState<any>();
 
-  useEffect( () => {
+  useEffect(() => {
     liff
       .init({
         liffId: import.meta.env.VITE_LIFF_ID,
         withLoginOnExternalBrowser: true,
       })
       .then(() => {
-        if (!liff.isLoggedIn()) {
-          setMessage("LIFF init succeeded.");
-          const idToken = liff.getIDToken();
-          const token = liff.getAccessToken();
-          const profile = liff.getDecodedIDToken()?.email;
+        setMessage("LIFF init succeeded.");
+        const idToken = liff.getIDToken();
+        const token = liff.getAccessToken();
+        const profile = liff.getDecodedIDToken()?.email;
 
-          setProfile(profile);
-          setToken(token ?? "");
-          setIdToken(idToken ?? "");
-        } else {
-          // Once logged in, get the user's profile or other information
-          liff
-            .getProfile()
-            .then((profile) => {
-              console.log("User Profile:", profile);
-            })
-            .catch((error) => console.error("Error fetching profile:", error));
-        }
+        setProfile(profile);
+        setToken(token ?? "");
+        setIdToken(idToken ?? "");
       })
       .catch((e: Error) => {
         setMessage("LIFF init failed.");
