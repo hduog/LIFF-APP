@@ -5,7 +5,8 @@ import "./App.css";
 function App() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState("chưa có gì đâu");
+  const [idToken, setIdToken] = useState<any>("chưa có gì đâu 2");
 
   useEffect(() => {
     liff
@@ -14,21 +15,28 @@ function App() {
       })
       .then(() => {
         setMessage("LIFF init succeeded.");
-        const idToken = liff.getAccessToken();
-        // nếu tồn tại thì call api login = token
-        console.log(idToken);
-        setToken(idToken ?? "");
+        const idToken = liff.getIDToken();
+        const token = liff.getAccessToken();
+        setToken(token ?? "");
+        setIdToken(idToken ?? "");
       })
       .catch((e: Error) => {
         setMessage("LIFF init failed.");
         setError(`${e}`);
       });
-  });
+  }, []); 
+
+  const copyToClipboard = (text: any) => {
+    navigator.clipboard.writeText(text)
+  };
 
   return (
     <div className="App">
       <h1>create-liff-app</h1>
-      <h1>token: {token}</h1>
+      <h1>Token: {token}</h1>
+      <button onClick={() => copyToClipboard(token)}>Copy Token</button>
+      <h1>ID Token: {idToken}</h1>
+      <button onClick={() => copyToClipboard(idToken)}>Copy ID Token</button>
       {message && <p>{message}</p>}
       {error && (
         <p>
