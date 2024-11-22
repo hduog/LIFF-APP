@@ -7,16 +7,21 @@ function App() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("chưa có gì đâu");
   const [idToken, setIdToken] = useState<any>("chưa có gì đâu 2");
+  const [profile, setProfile] = useState<any>()
 
   useEffect(() => {
     liff
       .init({
         liffId: import.meta.env.VITE_LIFF_ID,
+        withLoginOnExternalBrowser: true,
       })
       .then(() => {
         setMessage("LIFF init succeeded.");
         const idToken = liff.getIDToken();
         const token = liff.getAccessToken();
+        const profile = liff.getProfile();
+
+        setProfile(profile)
         setToken(token ?? "");
         setIdToken(idToken ?? "");
       })
@@ -24,10 +29,10 @@ function App() {
         setMessage("LIFF init failed.");
         setError(`${e}`);
       });
-  }, []); 
+  }, []);
 
   const copyToClipboard = (text: any) => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -36,6 +41,8 @@ function App() {
       <h1>Token: {token}</h1>
       <button onClick={() => copyToClipboard(token)}>Copy Token</button>
       <h1>ID Token: {idToken}</h1>
+      <button onClick={() => copyToClipboard(idToken)}>Copy ID Token</button>
+      <h1>profile: {profile?.email ?? "không get được"}</h1>
       <button onClick={() => copyToClipboard(idToken)}>Copy ID Token</button>
       {message && <p>{message}</p>}
       {error && (
